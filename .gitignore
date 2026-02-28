@@ -1,0 +1,17 @@
+# Claude Code
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# pytest
+.pytest_cache/
+
+# uv
+uv.lock
+
+# Export output (add your output dirs here)
+*-site/
