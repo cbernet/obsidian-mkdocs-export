@@ -69,5 +69,14 @@ def export(
     yml_content = generate_mkdocs_yml(site_name, nav, primary_color, logo_url, lang)
     (output_dir / "mkdocs.yml").write_text(yml_content)
 
+    # Generate pyproject.toml for Cloudflare Pages builds
+    (output_dir / "pyproject.toml").write_text(
+        '[project]\nname = "site"\nversion = "0.1.0"\nrequires-python = ">=3.12"\n'
+        'dependencies = [\n    "mkdocs>=1.6",\n    "mkdocs-material>=9.5",\n]\n'
+    )
+
+    # Generate .gitignore
+    (output_dir / ".gitignore").write_text("site/\n")
+
     if build:
         subprocess.run(["mkdocs", "build"], cwd=output_dir, check=True)
