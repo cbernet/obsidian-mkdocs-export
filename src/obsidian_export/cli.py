@@ -4,6 +4,13 @@ from pathlib import Path
 from obsidian_export.exporter import export
 
 
+def _validate_source_dir(source_dir: Path, vault: Path) -> None:
+    resolved = source_dir.resolve()
+    vault_resolved = vault.resolve()
+    if not resolved.is_relative_to(vault_resolved):
+        raise ValueError(f"Source folder is outside the vault: {source_dir}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Export an Obsidian vault subfolder as a branded MkDocs Material site."
@@ -19,6 +26,7 @@ def main():
 
     args = parser.parse_args()
     source_dir = args.vault / args.source_folder
+    _validate_source_dir(source_dir, args.vault)
 
     export(
         source_dir=source_dir,

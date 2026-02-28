@@ -1,4 +1,6 @@
-from obsidian_export.exporter import export
+import pytest
+
+from obsidian_export.exporter import export, _rename_index
 
 
 def _create_fake_vault(base):
@@ -70,3 +72,51 @@ def test_export_pipeline(tmp_path):
     gitignore = output / ".gitignore"
     assert gitignore.exists()
     assert "site/" in gitignore.read_text()
+
+
+def test_rename_index_path_traversal(tmp_path):
+    """_rename_index must reject paths that escape docs_dir."""
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    # Create a file outside docs_dir that the traversal would target
+    secret = tmp_path / "secret.md"
+    secret.write_text("sensitive data")
+
+    with pytest.raises(ValueError, match="escapes"):
+        _rename_index(docs_dir, "../secret.md")
+
+    # The file outside must be untouched
+    assert secret.exists()
+    assert not (docs_dir / "index.md").exists()
+
+
+def test_export_rejects_source_escaping_vault(tmp_path):
+    """export must reject source_dir that is not inside a reasonable boundary."""
+    # source_dir points outside the vault — should raise
+    vault = tmp_path / "vault"
+    vault.mkdir()
+    source_dir = tmp_path / "vault" / ".." / "etc"
+    source_dir = source_dir.resolve()
+    source_dir.mkdir(exist_ok=True)
+    (source_dir / "passwd.md").write_text("root:x:0:0")
+
+    # The CLI builds source_dir = vault / source_folder, so a traversal
+    # would produce a path not under vault. We test the CLI-level validation.
+    from obsidian_export.cli import _validate_source_dir
+    with pytest.raises(ValueError, match="outside"):
+        _validate_source_dir(source_dir, vault)
+
+
+def test_export_rejects_bad_primary_color(tmp_path):
+    """export must reject primary_color that isn't a valid hex color."""
+    source = _create_fake_vault(tmp_path / "vault")
+    output = tmp_path / "site"
+
+    with pytest.raises(ValueError, match="color"):
+        export(
+            source_dir=source,
+            output_dir=output,
+            site_name="Test",
+            primary_color="red;}body{display:none",
+            build=False,
+        )

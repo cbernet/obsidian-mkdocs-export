@@ -1,3 +1,4 @@
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -7,6 +8,7 @@ from obsidian_export.link_converter import convert_wiki_links
 from obsidian_export.nav_builder import build_nav
 
 EXCLUDE = {".DS_Store", ".obsidian"}
+_HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 
 
 def _collect_known_files(docs_dir: Path) -> set[str]:
@@ -34,7 +36,9 @@ def _convert_all_links(docs_dir: Path, known_files: set[str]) -> None:
 
 
 def _rename_index(docs_dir: Path, index_file: str) -> None:
-    source = docs_dir / index_file
+    source = (docs_dir / index_file).resolve()
+    if not source.is_relative_to(docs_dir.resolve()):
+        raise ValueError(f"Index file '{index_file}' escapes docs directory")
     if source.exists():
         source.rename(docs_dir / "index.md")
 
@@ -49,6 +53,9 @@ def export(
     index_file: str | None = None,
     build: bool = True,
 ) -> None:
+    if not _HEX_COLOR_RE.match(primary_color):
+        raise ValueError(f"Invalid hex color: {primary_color}")
+
     docs_dir = output_dir / "docs"
 
     _copy_source(source_dir, docs_dir)
