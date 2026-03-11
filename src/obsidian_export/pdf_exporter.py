@@ -26,11 +26,20 @@ def flatten_nav(nav: list) -> list[tuple[str, str]]:
 
 
 def slugify(title: str) -> str:
-    """Convert a note title to a pandoc-compatible anchor slug."""
-    slug = title.lower().strip()
+    """Convert a note title to an ASCII anchor slug."""
+    import unicodedata
+    # Normalize unicode and strip accents
+    slug = unicodedata.normalize("NFKD", title)
+    slug = slug.encode("ascii", "ignore").decode("ascii")
+    slug = slug.lower().strip()
     slug = re.sub(r'[^\w\s-]', '', slug)
     slug = re.sub(r'[\s]+', '-', slug)
     return slug
+
+
+def strip_first_heading(content: str) -> str:
+    """Remove the first H1 heading from content (we insert our own)."""
+    return re.sub(r'^#\s+[^\n]+\n*', '', content, count=1)
 
 
 def bump_headings(content: str) -> str:
@@ -109,6 +118,7 @@ def build_combined_markdown(
         content = file_path.read_text(encoding="utf-8")
 
         content = convert_wiki_links_for_pdf(content, known_files, slug_map, docs_dir)
+        content = strip_first_heading(content)
         content = bump_headings(content)
 
         slug = slug_map[rel_path]

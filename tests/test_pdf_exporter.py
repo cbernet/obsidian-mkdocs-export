@@ -10,6 +10,7 @@ from obsidian_export.pdf_exporter import (
     export_pdf,
     flatten_nav,
     slugify,
+    strip_first_heading,
 )
 
 
@@ -49,6 +50,23 @@ class TestSlugify:
 
     def test_special_chars(self):
         assert slugify("My Note (draft)") == "my-note-draft"
+
+    def test_accented_chars(self):
+        assert slugify("Araïko RAG - Analyse complexité") == "araiko-rag---analyse-complexite"
+
+
+class TestStripFirstHeading:
+    def test_strips_h1(self):
+        content = "# Title\nSome content"
+        assert strip_first_heading(content) == "Some content"
+
+    def test_no_heading(self):
+        content = "Just text\nMore text"
+        assert strip_first_heading(content) == content
+
+    def test_keeps_h2(self):
+        content = "## Subtitle\nContent"
+        assert strip_first_heading(content) == content
 
 
 class TestBumpHeadings:
@@ -124,9 +142,9 @@ class TestBuildCombinedMarkdown:
         # Check note titles with anchors are present
         assert "# details {#details}" in result
         assert "# intro {#intro}" in result
-        # Headings bumped
+        # Original H1 stripped, H2 bumped to H3
         assert "### Info" in result
-        assert "## Welcome" in result
+        assert "## Welcome" not in result  # stripped as duplicate of title
         # Wiki-links converted to anchors
         assert "[details](#details)" in result
         assert "[intro](#intro)" in result
