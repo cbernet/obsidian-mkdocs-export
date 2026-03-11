@@ -153,6 +153,7 @@ def export_pdf(
         output_path = Path(output_path).resolve()
         cmd = [
             "pandoc", str(combined_md),
+            "--from", "markdown-tex_math_dollars-subscript",
             "--toc", "--toc-depth=2",
             "--metadata", f"title={site_name}",
             "--pdf-engine=weasyprint",

@@ -178,9 +178,10 @@ blockquote p:last-child {
 /* Tables */
 table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     margin: 1.2em 0;
-    font-size: 9.5pt;
+    font-size: 9pt;
     page-break-inside: avoid;
 }
 
@@ -190,15 +191,19 @@ thead {
 }
 
 th {
-    padding: 0.7em 1em;
+    padding: 0.5em 0.6em;
     text-align: left;
     font-weight: 600;
     letter-spacing: 0.02em;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 td {
-    padding: 0.6em 1em;
+    padding: 0.4em 0.6em;
     border-bottom: 1px solid #e2e8f0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
 tbody tr:nth-child(even) {
