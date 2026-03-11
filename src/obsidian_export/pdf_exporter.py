@@ -28,7 +28,6 @@ def flatten_nav(nav: list) -> list[tuple[str, str]]:
 def slugify(title: str) -> str:
     """Convert a note title to an ASCII anchor slug."""
     import unicodedata
-    # Normalize unicode and strip accents
     slug = unicodedata.normalize("NFKD", title)
     slug = slug.encode("ascii", "ignore").decode("ascii")
     slug = slug.lower().strip()

@@ -74,6 +74,8 @@ uv run obsidian-export "Projects/Client/Report" \
 
 The PDF includes a table of contents, styled headings, and internal links that navigate within the document. If `--pdf-output` is omitted, the file is named after the site name.
 
+**Known limitation:** Internal links to headings with accented characters (e.g. "Araïko") don't work in macOS Preview.app due to a PDFKit bug with Unicode anchor resolution. The same links work correctly in Chrome, VSCode, and Adobe Acrobat.
+
 ### Arguments
 
 | Argument | Description |
