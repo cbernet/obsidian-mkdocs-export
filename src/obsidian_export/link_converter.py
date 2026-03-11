@@ -66,6 +66,8 @@ def _replace_wiki_link(match: re.Match, known_files: set[str], current_file: str
     return f"**{inner}**"
 
 
+WIKI_LINK_PATTERN = r"(!?)\[\[([^\]]+)\]\]"
+
+
 def convert_wiki_links(content: str, known_files: set[str], current_file: str) -> str:
-    pattern = r"(!?)\[\[([^\]]+)\]\]"
-    return re.sub(pattern, lambda m: _replace_wiki_link(m, known_files, current_file), content)
+    return re.sub(WIKI_LINK_PATTERN, lambda m: _replace_wiki_link(m, known_files, current_file), content)
