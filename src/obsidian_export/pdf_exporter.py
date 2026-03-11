@@ -131,6 +131,7 @@ def export_pdf(
     source_dir: Path,
     output_path: Path,
     site_name: str,
+    llm_order: bool = False,
 ) -> None:
     if not shutil.which("pandoc"):
         raise RuntimeError(
@@ -142,7 +143,7 @@ def export_pdf(
         _copy_source(source_dir, docs_dir)
 
         known_files = _collect_known_files(docs_dir)
-        nav = build_nav(docs_dir)
+        nav = build_nav(docs_dir, llm_order=llm_order)
 
         combined = build_combined_markdown(docs_dir, nav, known_files)
 

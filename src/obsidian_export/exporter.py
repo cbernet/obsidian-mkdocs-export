@@ -52,6 +52,7 @@ def export(
     lang: str = "en",
     index_file: str | None = None,
     build: bool = True,
+    llm_order: bool = False,
 ) -> None:
     if not _HEX_COLOR_RE.match(primary_color):
         raise ValueError(f"Invalid hex color: {primary_color}")
@@ -72,7 +73,7 @@ def export(
     (css_dir / "extra.css").write_text(generate_extra_css(primary_color))
 
     # Generate mkdocs.yml
-    nav = build_nav(docs_dir)
+    nav = build_nav(docs_dir, llm_order=llm_order)
     yml_content = generate_mkdocs_yml(site_name, nav, primary_color, logo_url, lang)
     (output_dir / "mkdocs.yml").write_text(yml_content)
 

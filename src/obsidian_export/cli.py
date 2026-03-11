@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--logo-url", default=None, help="URL for the site logo")
     parser.add_argument("--lang", default="en", help="Primary language for search (default: en)")
     parser.add_argument("--index", default=None, dest="index_file", help="Filename to rename as index.md (e.g. 'Home.md')")
+    parser.add_argument("--llm-order", action="store_true", help="Use Claude to order nav entries logically")
     parser.add_argument("--pdf", action="store_true", help="Generate a single PDF instead of an MkDocs site")
     parser.add_argument("--pdf-output", type=Path, default=None, help="Output PDF file path (default: <site-name>.pdf)")
 
@@ -37,6 +38,7 @@ def main():
             source_dir=source_dir,
             output_path=pdf_path,
             site_name=args.site_name,
+            llm_order=args.llm_order,
         )
     else:
         if not args.output:
@@ -49,6 +51,7 @@ def main():
             logo_url=args.logo_url,
             lang=args.lang,
             index_file=args.index_file,
+            llm_order=args.llm_order,
         )
 
 
